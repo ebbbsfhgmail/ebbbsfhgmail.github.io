@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>مساعد جيمني الذكي</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        #chatbox {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            height: 400px;
+            overflow-y: auto;
+        }
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .user-message {
+            background: #e3f2fd;
+            text-align: left;
+        }
+        .bot-message {
+            background: #f5f5f5;
+            text-align: right;
+        }
+        input, select, button {
+            margin: 5px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #1a73e8;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #1557b0;
+        }
+    </style>
+</head>
+<body>
+    <h1>مساعد جيمني الذكي 🚀</h1>
+    
+    <div class="controls">
+        <input type="text" id="question" placeholder="اكتب سؤالك هنا..." size="50">
+        <select id="language">
+            <option value="ar">العربية</option>
+            <option value="en">الإنجليزية</option>
+            <option value="fr">الفرنسية</option>
+            <option value="es">الإسبانية</option>
+        </select>
+        <button onclick="askQuestion()">إرسال</button>
+    </div>
+
+    <div id="chatbox"></div>
+
+    <div class="code-section">
+        <h3>تنزيل الكود 💻</h3>
+        <textarea id="code-editor" placeholder="الصق الكود هنا..."></textarea><br>
+        <input type="text" id="filename" value="code.py">
+        <button onclick="downloadCode()">تنزيل</button>
+    </div>
+
+    <div class="saved-responses">
+        <h3>المحفوظات 💾</h3>
+        <button onclick="loadSavedResponses()">تحديث المحفوظات</button>
+        <ul id="responses-list"></ul>
+    </div>
+
+    <script>
+        // دالة إرسال السؤال
+        async function askQuestion() {
+            const question = document.getElementById('question').value;
+            const language = document.getElementById('language').value;
+            
+            if(!question) return alert('الرجاء إدخال سؤال!');
+            
+            try {
+                const response = await fetch('/ask', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({question, language})
+                });
+                
+                const data = await response.json();
+                addMessage(question, data.reply);
+                loadSavedResponses();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء الاتصال!');
+            }
+        }
+
+        // دالة إضافة الرسائل للشات
+        function addMessage(question, reply) {
+            const chatbox = document.getElementById('chatbox');
+            chatbox.innerHTML += `
+                <div class="message user-message">
+                    <strong>أنت:</strong> ${question}
+                </div>
+                <div class="message bot-message">
+                    <strong>البوت:</strong> ${reply}
+                </div>
+            `;
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        // باقي الدوال (downloadCode, loadSavedResponses) تبقى كما هي
+        // ... [يتم وضع نفس كود الجافاسكريبت السابق هنا] ...
+    </script>
+</body>
+</html>
